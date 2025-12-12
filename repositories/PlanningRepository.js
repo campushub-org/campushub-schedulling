@@ -76,6 +76,58 @@ async function getPlanningByCriteria({ filiereId, semestre }) {
     return rows[0];
 }
 
+/**
+ * @description Sauvegarde l'emploi du temps généré dans la base de données.
+ * @param {object} planningData Les données structurées de l'emploi du temps à insérer.
+ * @param {string} typePlanning Le type de planification ('COURS', 'CC', ou 'SN'). <-- NOUVEAU
+ */
+async function savePlanning(planningData, typePlanning) { // <-- NOUVEL ARGUMENT
+    // 1. Déstructuration des données
+    const { filiereId, semestre, anneeAcademique, planningJson } = planningData;
+
+    // 2. Requête SQL d'insertion (AJOUT DE type_planning)
+    const sql = `
+        INSERT INTO emplois_du_temps (filiere_id, semestre, type_planning, annee_academique, planning_json, date_generation)
+        VALUES (?, ?, ?, ?, ?, NOW())
+    `;
+
+    // Les valeurs (AJOUT DE typePlanning)
+    const values = [
+        filiereId,
+        semestre,
+        typePlanning, // <-- NOUVELLE VALEUR
+        anneeAcademique,
+        JSON.stringify(planningJson)
+    ];
+
+    try {
+        const [result] = await pool.execute(sql, values);
+        console.log(`[REPOSITORY] Planning (${typePlanning}) sauvegardé. ID: ${result.insertId}`);
+        return { success: true, id: result.insertId };
+    } catch (error) {
+        console.error("❌ Erreur MySQL lors de la sauvegarde du planning:", error.message);
+        throw new Error("Erreur de persistance du planning.");
+    }
+}
+
+/**
+ * @description Récupère un emploi du temps par filière, semestre, et TYPE.
+ * @param {string} typePlanning Le type de planification ('COURS', 'CC', ou 'SN'). <-- NOUVEAU
+ */
+async function getPlanningByCriteria({ filiereId, semestre, typePlanning }) { // <-- NOUVEL ARGUMENT
+    const [rows] = await pool.execute(
+        "SELECT * FROM emplois_du_temps WHERE filiere_id = ? AND semestre = ? AND type_planning = ? ORDER BY date_generation DESC LIMIT 1",
+        [filiereId, semestre, typePlanning] // <-- NOUVELLE VALEUR
+    );
+
+    if (rows.length === 0) {
+        return null;
+    }
+
+    return rows[0];
+}
+
+
 module.exports = {
     savePlanning,
     getPlanningByCriteria
