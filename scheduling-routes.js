@@ -15,3 +15,6 @@ router.post('/generate-timetable', schedulerController.generatePlanning);
 // L'URL complète sera : /api/v1/scheduling/plannings?filiere=GL&semestre=S1
 router.get('/plannings', schedulerController.getPlanningByCriteria); // <-- AJOUTER CETTE LIGNE
 module.exports = router;
+
+// [GET] Récupère tous les créneaux au format compatible frontend
+router.get('/events', schedulerController.getAllEvents);

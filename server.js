@@ -21,6 +21,8 @@ loadConfig().then(config => {
   // 3. Initialisation du Serveur Express et Middlewares
   // =================================================================
   const app = express();
+  const cors = require('cors');  // ← AJOUT
+  app.use(cors());               // ← AJOUT
   app.use(express.json()); // Middleware pour parser le corps des requêtes en JSON
 
   // =================================================================

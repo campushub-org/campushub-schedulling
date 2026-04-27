@@ -170,3 +170,17 @@ module.exports = {
     getLatestPlanning,
     generateCours, // Exporté pour faciliter les tests unitaires
 };
+
+
+// Ajouter cette fonction
+async function getAllPlannings() {
+    return await PlanningRepository.getAllPlannings();
+  }
+  
+  // Ajouter dans module.exports
+  module.exports = {
+    runAlgorithm,
+    getLatestPlanning,
+    getAllPlannings,  // ← AJOUT
+    generateCours,
+  };

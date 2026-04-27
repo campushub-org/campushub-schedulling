@@ -4,8 +4,8 @@ const mysql = require('mysql2/promise');
 // NOTE: Ces valeurs doivent être lues depuis votre Config Server, mais nous les mettons ici en dur pour le test local rapide.
 const dbConfig = {
     host: 'localhost',      // Ou l'IP de votre serveur MySQL
-    user: 'campushub_user',           // VOTRE NOM D'UTILISATEUR
-    password: 'votre_mot_de_passe_secret',       // VOTRE MOT DE PASSE
+    user: 'root',           // VOTRE NOM D'UTILISATEUR
+    password: '',       // VOTRE MOT DE PASSE
     database: 'scheduling_db' // Nom de la base de données spécifique au Planning
 };
 
@@ -132,3 +132,19 @@ module.exports = {
     savePlanning,
     getPlanningByCriteria
 };
+
+
+// Ajouter cette fonction
+async function getAllPlannings() {
+    const [rows] = await pool.execute(
+      `SELECT * FROM emplois_du_temps ORDER BY date_generation DESC`
+    );
+    return rows;
+  }
+  
+  // Ajouter dans module.exports
+  module.exports = {
+    savePlanning,
+    getPlanningByCriteria,
+    getAllPlannings,  // ← AJOUT
+  };
